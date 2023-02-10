@@ -31,6 +31,7 @@ public class HomeServiceImpl extends ServiceImpl<HomeMapper, Home> implements Ho
     public Home selectByName(String name) {
         LambdaQueryWrapper<Home> wrapper = Wrappers.lambdaQuery();
         wrapper.eq(Home::getName, name);
+        wrapper.last("limit 1");
         return this.baseMapper.selectOne(wrapper);
     }
 
