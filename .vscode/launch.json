@@ -1,0 +1,15 @@
+{
+    "configurations": [
+    
+        {
+            "type": "java",
+            "name": "Spring Boot-MarsHomeApplication<mars-home>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "top.wujinxing.marshome.MarsHomeApplication",
+            "projectName": "mars-home",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
