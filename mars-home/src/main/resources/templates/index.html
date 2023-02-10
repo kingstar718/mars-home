@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>AMap JSAPI Loader</title>
+    <style>
+        html, body, #container {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="container" tabindex="0"></div>
+<script src="//a.amap.com/Loca/static/mock/districts.js"></script>
+<script src="https://webapi.amap.com/loader.js"></script>
+<script>
+    AMapLoader.load({ //首次调用 load
+        key:'0d7983a536b27ac0309c209b9fb1d6b5',//首次load key为必填
+        version:'2.0',
+      	AMapUI: {
+            version: '1.1',
+            plugins:['overlay/SimpleMarker']
+        }
+    }).then((AMap)=>{
+        map = new AMap.Map('container',{
+            zoom: 15,
+        });
+    });
+</script>
+</body>
+</html>
