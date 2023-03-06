@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@amap/amap-jsapi-loader": "^1.0.1",
     "element-plus": "^2.2.30",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
