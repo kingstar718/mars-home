@@ -1,45 +1,36 @@
-<script>
+<script setup>
 import { ref } from 'vue'
 import AMapLoader from "@amap/amap-jsapi-loader"
 import { shallowRef, reactive } from '@vue/reactivity'
 
-export default {
-  name:"mapcomtaint",
-    setup(){
-        const map = shallowRef(null);
-        const overlayers = reactive([]);
-        const currPolygon = shallowRef(null);
-        return{
-            map,
-            overlayers
-        }
+const drawForm = ref({})
+let map = ref(null);
+let mouseTool = ref(null);
+let overlayers = ref([]);
+let currPolygon = ref(null);
+const drawType = shallowRef('polygon')
 
-    },
-    create(){
-
-    },
-    methods: {
-      initMap() {
-        console.log("init amap");
-        AMapLoader.load({
-          key: "d4bb074068a3edd7c8fe665fedb3cca4", // 申请好的Web端开发者Key，首次调用 load 时必填
-          version: "1.4.15", // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
-        })
-        .then((AMap) => {
-          this.map = new AMap.Map("container", {
-          //设置地图容器id
-          viewMode: "2D", //是否为3D地图模式
-          zoom: 10, //初始化地图级别
-          center: [120.074926, 23.310678], //初始化地图中心点位置
-        });
-        //添加插件
-        AMap.plugin(["AMap.ToolBar", "AMap.Scale", "AMap.HawkEye", "AMap.PolyEditor", "AMap.MouseTool"], function () {
-          //异步同时加载多个插件
-          //map.addControl(new AMap.HawkEye()); //显示缩略图
-          map.addControl(new AMap.Scale()); //显示当前地图中心的比例尺
-          map.addControl(new AMap.PolyEditor());
-          map.addControl(new AMap.MouseTool());
-        });
+const initMap = () => {
+  console.log("init amap");
+  AMapLoader.load({
+    key: "d4bb074068a3edd7c8fe665fedb3cca4", // 申请好的Web端开发者Key，首次调用 load 时必填
+    version: "1.4.22", // 指定要加载的 JSAPI 的版本，缺省时默认为 1.4.15
+  })
+    .then((AMap) => {
+      map = new AMap.Map("container", {
+        //设置地图容器id
+        viewMode: "2D", //是否为3D地图模式
+        zoom: 15, //初始化地图级别
+        center: [113.939295, 22.521794], //初始化地图中心点位置
+      });
+      //添加插件
+      AMap.plugin(["AMap.ToolBar", "AMap.Scale", "AMap.HawkEye", "AMap.PolyEditor", "AMap.MouseTool"], function () {
+        //异步同时加载多个插件
+        //map.addControl(new AMap.HawkEye()); //显示缩略图
+        this.map.addControl(new AMap.Scale()); //显示当前地图中心的比例尺
+        this.map.addControl(new AMap.PolyEditor());
+        this.map.addControl(new AMap.MouseTool());
+      });
       // // 单击
       // map.on("click", (e) => {
       //   // console.log(e);
@@ -82,53 +73,95 @@ export default {
       //   });
       //   map.add([polyline]);
       // }
-      this.mouseTool = new AMap.MouseTool(this.map);
+      mouseTool = new AMap.MouseTool(map);
       //监听draw事件可获取画好的覆盖物
-      console.log(this.overlayers);
-      this.mouseTool.on('draw',function(e){
-        //this.overlayers.push(e.obj);
-        this.currPolygon = e.obj
-        console.log(this.currPolygon.getPath());
+      mouseTool.on('draw', function (e) {
+        currPolygon = e.obj
+        overlayers.value.push(currPolygon)
       })
-      console.log(this.overlayers);
     })
     .catch((e) => {
       console.log(e);
     });
-  },
-  drawPolygon(){
-    console.log(this.overlayers.push(1));
-    this.mouseTool.polygon({
-      fillColor:'#00b0ff',
-      strokeColor:'#80d8ff',
-      //同Polygon的Option设置
-      strokeColor: "#FF33FF", 
-      strokeWeight: 6,
-      strokeOpacity: 0.2,
-      fillOpacity: 0.4,
-      fillColor: '#1791fc',
-      zIndex: 50,
-  });
-
 }
+initMap();
 
-},
-    mounted(){
-      //DOM初始化完成进行地图初始化
-      this.initMap();
-    }
+function draw() {
+  console.log(drawType);
+  switch (drawType.value) {
+    case 'polygon':
+      mouseTool.polygon({
+        fillColor: '#00b0ff',
+        strokeColor: '#80d8ff',
+        //同Polygon的Option设置
+        strokeColor: "#FF33FF",
+        strokeWeight: 6,
+        strokeOpacity: 0.2,
+        fillOpacity: 0.4,
+        fillColor: '#1791fc',
+        zIndex: 50,
+      });
+  }
+}
+function clearDraw() {
+  map.remove(currPolygon);
+}
+function stopDraw() {
+  //关闭，并清除覆盖物
+  mouseTool.close(true)
+}
+function pushPolygon() {
+  console.log(currPolygon);
+  console.log(currPolygon.getPath());
+}
+function deployPolygon() {
+  var path = [
+    [113.935132, 22.525520],
+    [113.945689, 22.524410],
+    [113.945346, 22.516521],
+    [113.930240, 22.517195]
+  ]
+  var polygon = new AMap.Polygon({
+    path: path,
+    strokeColor: "#FF33FF",
+    strokeWeight: 6,
+    strokeOpacity: 0.2,
+    fillOpacity: 0.4,
+    fillColor: '#1791fc',
+    zIndex: 50,
+  })
+  this.map.add(polygon)
+  // 缩放地图到合适的视野级别
+  this.map.setFitView([polygon])
 }
 </script>
 
 <template>
   <div>
     <div>
-        <h3>JSAPI Vue3地图组件示例</h3>
-    </div>
-    <div>
-      <el-button>开始绘制</el-button>
-      <el-button>结束绘制</el-button>
-      <el-button @click="drawPolygon()">多边形</el-button>
+      <el-form :inline="true" :model="drawForm" label-width="120px">
+        <el-form-item label="绘制类型">
+          <el-radio-group v-model="drawType">
+            <el-radio label="polygon" />
+            <el-radio label="circle" />
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="draw()">开始绘制</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="stopDraw()">结束绘制</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="clearDraw()">清除图层</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="pushPolygon()">存储</el-button>
+        </el-form-item>
+        <el-form-item>
+          <el-button @click="deployPolygon()">展示</el-button>
+        </el-form-item>
+      </el-form>
     </div>
     <div id="container"></div>
   </div>
@@ -136,8 +169,7 @@ export default {
 
 <style scoped>
 #container {
-  height: 600px;
-  width: 800%;
+  height: 800px;
+  width: 100%;
 }
-
 </style>
