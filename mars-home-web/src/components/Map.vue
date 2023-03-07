@@ -113,6 +113,13 @@ function stopDraw() {
 function pushPolygon() {
   console.log(currPolygon);
   console.log(currPolygon.getPath());
+
+  this.$axios.get('/map/addPolygon?points=13123').then(res => {
+    console.log(res.data)
+  }).catch(e => {
+    console.log(e)
+  })
+
 }
 function deployPolygon() {
   var path = [

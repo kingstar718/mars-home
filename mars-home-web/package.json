@@ -12,7 +12,9 @@
     "@amap/amap-jsapi-loader": "^1.0.1",
     "element-plus": "^2.2.30",
     "vue": "^3.2.45",
-    "vue-router": "^4.1.6"
+    "vue-router": "^4.1.6",
+    "axios": "^0.21.1",
+    "vue-axios": "^3.2.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
